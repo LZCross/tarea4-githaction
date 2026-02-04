@@ -15,9 +15,13 @@ jobs:
       - name: Send notification to ntfy.sh
         env:
           NTFY_TOPIC: devops-itla
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          REF: ${{ github.ref }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          TITLE="Repo: ${{ github.repository }} - push to main"
-          COMMIT="${{ github.event.head_commit.message }}"
+          TITLE="Repo: $REPO - push to main"
+          COMMIT="$COMMIT_MSG"
           if [ -z "$COMMIT" ]; then COMMIT="no-message"; fi
-          MESSAGE="Repo: ${{ github.repository }}\nActor: ${{ github.actor }}\nRef: ${{ github.ref }}\nCommit: $COMMIT"
-          printf "%b" "$MESSAGE" | curl -s -S -X POST -H "Title: $TITLE" --data-binary @- https://ntfy.sh/${{ env.NTFY_TOPIC }}
+          MESSAGE="Repo: $REPO\nActor: $ACTOR\nRef: $REF\nCommit: $COMMIT"
+          printf "%b" "$MESSAGE" | curl -s -S -X POST -H "Title: $TITLE" --data-binary @- https://ntfy.sh/${NTFY_TOPIC}
