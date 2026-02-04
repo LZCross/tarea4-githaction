@@ -1,0 +1,21 @@
+name: Alerta ntfy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification to ntfy.sh
+        run: |
+          PAYLOAD=$(cat <<EOF
+Repo: ${{ github.repository }}
+Actor: ${{ github.actor }}
+Ref: ${{ github.ref }}
+Commit: ${{ github.event.head_commit.message }}
+EOF
+)
+          curl -s -S -X POST -H "Title: Repo: ${{ github.repository }} - push to main" -d "$PAYLOAD" https://ntfy.sh/devops-itla
